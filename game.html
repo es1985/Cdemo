@@ -11,7 +11,7 @@
 
   <script src="js/vendor/modernizr.js"></script>
   <script src="js/vendor/ion.sound-2.1.3/ion.sound.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+ <script src="/socket.io/socket.io.js"></script>
   <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 
   <script src="js/miau.js"></script>
@@ -21,7 +21,7 @@
   <script src="https://www.gstatic.com/swiffy/v7.1/runtime.js"></script>
 
   <script type="text/javascript">
-  document.domain="178.62.30.161";
+  document.domain="catpips.com";
   </script>
 
 
@@ -38,22 +38,42 @@ JSON object to come out:
 
 <div class="row full-height">
 
-<!--
-  <a id="clickable" onclick="javascript:game_manager.cat_clicked()" href="#" style='width: 100%;
+
+  <a id="clickable" href="#" style='width: 100%;
   height: 44%;
   background: transparent;
   position: absolute;
   top: 200px;
-  z-index: 1;'>
-
--->
+  z-index: 6;'>
 </a>
 
-<div id="swiffycontainer" style="width:300px;height:300px;">
+  <a id="while-scratch-clickable" href="#" style='width: 100%;
+  height: 44%;
+  background: transparent;
+  position: absolute;
+  top: 200px;
+  z-index: 6;
+  display: none;'>
+</a>
 
+<!-- onmousedown="javascript:game_manager.cat_click_down()" onmouseup="javascript:game_manager.cat_click_up()" --> 
+
+<div id="swiffycontainer" class="swiffy_cat" style="width:300px;height:300px;">
+ 
+
+<!--
+<div id="swiffycontainer3" class="swiffy_cat" style="width:300px;height:300px;">
+-->
   <!-- onclick="javascript:play_anim_and_loop('eyes_twitch','cat_breathing',2000,'swiffycontainer')"-->
 </div>
+<div id="swiffycontainer2" class="swiffy_cat" style="width:300px;height:300px;">
+</div>
 
+<div id="swiffycontainer3" class="swiffy_cat" style="width:300px;height:300px;">
+</div>
+
+<div id="fish-swiffy" style="width:300px;height:300px;">
+</div>
 
 
 <div id="" class="small-12 columns full-height">
@@ -167,7 +187,7 @@ JSON object to come out:
 
   <ul class="cat-actions">
     <li class="cat-action cat-action-sleep"><button id="sleep_button" onclick="javascript:game_manager.sleep_clicked()"><i class="fa fa-moon-o"></i></button></li>
-    <li class="cat-action cat-action-scratch"><button><i class="fa fa-paw"></i></button></li>
+    <li class="cat-action cat-action-scratch" id="scratch_button" onclick="javascript:game_manager.scratch_clicked()"><button><i class="fa fa-paw"></i></button></li>
     <li class="cat-action cat-action-feedme"><a id="food_bowl_button" href="#" onclick="javascript:game_manager.food_bowl_button_clicked()"><img src="img/feedme.png"></a></li>
   </ul>
   
@@ -202,7 +222,6 @@ JSON object to come out:
         <a class="close-reveal-modal approval-close" id="">ok</a>
       </div>
       <!-- food modal approve-->
-
       <!-- landing modal -->
       <div id="landingModal" class="reveal-modal message-modal" data-reveal>
         <span class="landing-arrow-health"><img src="img/landind-modal-arrow.png"></span>
@@ -224,6 +243,38 @@ JSON object to come out:
         <p class="text-center level-modal-img"><img src="img/new-level.png"></p>
         <a class="close-reveal-modal approval-close" id="">ok</a>
       </div>
+
+      <!-- level gift modal -->
+      <div id="levelgiftModal" class="message-modal level-gift-modal reveal-modal" data-reveal data-options="close_on_background_click:false">
+        <ul class="inline-list message-modal-header">
+          <li><i class="fa fa-trophy"></i></li>
+          <li><p class="lead">FREE EMOTICONS PACK!</p></li>
+        </ul>
+        <ul id="choose_new_emoticons_area" class="level-gift-icon-packs small-block-grid-3">
+          <!--
+          <li><img src="img/emoticons/emo-dayan.png"></li>
+          <li><img src="img/emoticons/emo-dayan.png"></li>
+          <li><img src="img/emoticons/emo-dayan.png"></li>
+          <li><img src="img/emoticons/emo-dayan.png"></li>
+          <li><img src="img/emoticons/emo-dayan.png"></li>
+        -->
+        </ul>
+        <!--<a class="close-reveal-modal approval-close level-gift-close" id="">ok</a>-->
+      </div>
+
+
+      <!-- level gift fish modal -->
+      <div id="fish-gift-modal" class="message-modal level-gift-modal level-gift-fish reveal-modal" data-reveal>
+        <ul class="inline-list message-modal-header">
+          <li><i class="fa fa-trophy"></i></li>
+          <li><p class="lead">new gift! fish</p></li>
+        </ul>
+        <p class="text-center level-modal-img"><img src="img/gift-fish.png"></p>
+        <a class="close-reveal-modal approval-close level-gift-close" id="">ok</a>
+      </div>
+      <!-- level gist fish modal -->
+
+
 
       <!--<a href="#" class="the-cat"><img id="cat_avatar" src="img/cat.png"></a>-->
 
@@ -291,7 +342,8 @@ JSON object to come out:
   <script src="js/foundation/foundation.dropdown.js"></script>
   <script src="js/foundation/foundation.orbit.js"></script>
   <script src="js/foundation/foundation.reveal.js"></script>
-  
+  <script src="js/vendor/jQuery.html5Loader.js"></script>
+
 
   <script>
   $(document).foundation('');
@@ -307,14 +359,18 @@ JSON object to come out:
 
    
 
-  var txt = '{"sender":"BB Netanyahu","text":"ZOOOOOooooonk", "notification":"1"}';
-    //game_manager.read_j(txt);
-    var txt2 = '{"sender":"Sarah Netanyahu","emoticon":"happy", "score":"2"}';
-    // game_manager.read_j(txt2);
-    var txt3 = '{"sender":"BB Netanyahu","food_sent":"1"}';
-     game_manager.read_j(txt3);
-     var txt4 = '{"sender":"BB Netanyahu","food_accepted":1}';
+     var txt = '{"sender":"BB Netanyahu","text":"ZOOOOOooooonk", "notification":"1","cat_sender":"0"}';
+     //game_manager.read_j(txt);
+     var txt2 = '{"sender":"Sarah Netanyahu","emoticon":"happy", "score":"2","cat_sender":"1"}';
+     // game_manager.read_j(txt2);
+     var txt3 = '{"sender":"BB Netanyahu","food_sent":"1", "cat_sender":"0"}';
+     //game_manager.read_j(txt3);
+     var txt4 = '{"sender":"BB Netanyahu","food_accepted":1,"cat_sender":"0"}';
      //game_manager.read_j(txt4);
+     var txt5 = '{"sender":"BB Netanyahu","cat_sender":"0","general_animation_loop":"fish_regular","animation_stage":"fish-swiffy"}';
+     //game_manager.read_j(txt5);
+     var txt6 = '{"sender":"BB Netanyahu","score":"100"}';
+     //game_manager.read_j(txt6);
 
      </script>
 

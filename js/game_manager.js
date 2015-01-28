@@ -160,7 +160,8 @@ food_eaten:1 if food was eaten
    
     if (!this.local)
     { 
-      this.socket = io();
+     	this.socket = io()
+     // this.socket = io('https://catpips.com', {secure: true, port: 443}) 
     }
 
     //$(".human-feed").hide(); 
