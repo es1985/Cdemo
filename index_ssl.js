@@ -92,16 +92,32 @@ io.on('connection', function(socket)
         else
         {
           console.log('Player found! Retrieving a list of his existing games.')
+          query = ('')
           db.query('SELECT game_id,game_start,cat_last_login,human_last_login FROM games where cat_id = ? or human_id = ?', [data.id,data.id],function(err,result) 
-          {
+      //  db.query('SELECT games.game_id,games.game_start,games.cat_last_login, games.human_last_login, games.cat_id,games.human_id, count(jsons.json_id) as messages_unseen, jsons.json_id,jsons.json_content_type,jsons.json_sender,jsons.message_seen  FROM games LEFT JOIN jsons ON games.game_id = jsons.game_id GROUP BY games.game_id having games.cat_id = ? or games.human_id = ? and jsons.json_content_type <> "data"  and jsons.json_sender <> ? and jsons.message_seen = 0', [data.id,data.id,data.id], function(err,result)           
+            {
             if (err)
               { console.log(err) }
             else 
              { 
+                result.games_list = 1
                 console.log('Game ids are',result);
-                socket.emit(data.id,result);
+                jason = {result:result,games_list:1} 
+                socket.emit(data.id,jason);
              }
-          })      
+            })      
+          db.query('SELECT games.game_id, games.cat_id,games.human_id, count(jsons.json_id) as messages_unseen FROM games LEFT JOIN jsons ON games.game_id = jsons.game_id WHERE jsons.json_sender <> ? and jsons.json_sender <> ? and jsons.message_seen = 0 GROUP BY games.game_id having games.cat_id = ? or games.human_id = ?', [data.id,data.id,data.id,data.id], function(err,result)
+            {
+            if (err)
+              { console.log(err) }
+            else 
+            { 
+                console.log('Game ids with messages unseen are',result);
+                if (result.length > 0)
+                console.log('Emiting list of games with messages unseen')  
+                socket.emit(data.id,result);
+            } 
+           })
         }   
 	     };
       })
@@ -357,6 +373,17 @@ io.on('connection', function(socket)
                 console.log(data)
                 console.log('JSON id is',data.id)
                 console.log('Inserting JSON',data.id,'into the database')
+                //Send  message notifications to the other user
+                players = data.game_id.split('_')
+                console.log('Players are',players)
+                if (players[0]==data.actions.sender)
+                  receiver = players[1]
+                else
+                  receiver = players[0]
+                console.log ('receiver is',receiver)
+                jason = {game_id:data.game_id,notifications_mainscreen:1}
+                console.log('Emiting notifications to the receiever')
+                io.emit(receiver,jason)
                 if (data.actions.emoticon === undefined)
                   {
                    content = data.actions.text
