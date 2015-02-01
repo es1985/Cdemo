@@ -8,9 +8,9 @@ var mysql = require('mysql');
 //connect to mysql database
 var db = mysql.createConnection({
       host: 'localhost'
-    , database: 'catpips'
-    , user: 'root'
-    , password: 'Mil@n2014'});
+    , database: 'xxx'
+    , user: 'xxx'
+    , password: 'xxx'});
 
 db.connect(function(err){
     if (err) console.log(err)
